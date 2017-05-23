@@ -1,5 +1,6 @@
 package com.ylx.retrofitdemo01;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "=====MainActivity=====";
 
-    private TextView responseBtn,rxjavaBtn;
+    private TextView responseBtn,rxjavaBtn,constraintLayout_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,17 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(s);
                     }
                 });*/
+            }
+        });
+
+        /**
+         * constraintLayout_text
+         */
+        constraintLayout_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,DaggerTestActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -230,5 +242,6 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         responseBtn = (TextView) findViewById(R.id.retrofit2_btn);
         rxjavaBtn = (TextView) findViewById(R.id.rxjava2_btn);
+        constraintLayout_text = (TextView) findViewById(R.id.constraintLayout_text);
     }
 }

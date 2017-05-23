@@ -26,4 +26,14 @@
         android:padding="10dp"
         android:textColor="#ffffff"
         android:text="rxjava2小试牛刀" />
+
+    <TextView
+        android:id="@+id/constraintLayout_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:textColor="#ffffff"
+        android:text="ConstraintLayout布局" />
 </LinearLayout>
