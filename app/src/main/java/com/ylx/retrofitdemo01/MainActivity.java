@@ -8,10 +8,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ylx.retrofitdemo01.bean.Person;
 import com.ylx.retrofitdemo01.bean.Repo;
+import com.ylx.retrofitdemo01.retrofit.LocalRetrofit;
 import com.ylx.retrofitdemo01.retrofit.RetrofitTest;
+import com.ylx.retrofitdemo01.util.BaseTask;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -30,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "=====MainActivity=====";
 
-    private TextView responseBtn,rxjavaBtn,constraintLayout_text;
+    private TextView responseBtn,get_local_data,rxjavaBtn,constraintLayout_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /**
+         * 获取本地服务器数据
+         */
+        get_local_data.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                getTest();
+                getUser();
+            }
+        });
+
+        /**
          * Rxjava2小试牛刀
          */
         rxjavaBtn.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +116,76 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,DaggerTestActivity.class);
                 startActivity(intent);
+            }
+        });
+    }
+
+    /**
+     * 仿真版请求本地服务器json数据
+     */
+    private void getUser(){
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("name", "张三丰");
+        map.put("age", "90");
+
+        new BaseTask<List<Person>>(this, LocalRetrofit.getStringService().getUsers(map)).handlerResponse(new BaseTask.ResonseLinsteren<List<Person>>() {
+
+            @Override
+            public void onSuccess(List<Person> persons) {
+                for(int i = 0; i < persons.size(); i ++){
+                    Person person = persons.get(i);
+                    Log.i(TAG, "name = " + person.getName() + " age = " + person.getAge());
+                }
+            }
+
+            @Override
+            public void onFail() {
+
+            }
+        });
+    }
+
+    /**
+     * 获取本地服务器数据
+     */
+    private void getTest(){
+        Call<String> call = (Call<String>) LocalRetrofit.getStringService().getTest();
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if(response.isSuccessful() && response.errorBody() == null){
+                    Toast.makeText(MainActivity.this, "str = " + response.body().toString(), Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "str = " + response.body().toString());
+                    postTest();
+                } else {
+                    Toast.makeText(MainActivity.this, "error code = " + response.code() + "=== error message = " + response.message(), Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "error code = " + response.code());
+                    Log.i(TAG, "error message = " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "fail=" + t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.i(TAG,"fail=" + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * postTest
+     */
+    private void postTest(){
+        Call<Void> call = LocalRetrofit.getStringService().createPerson("张三丰", "admin123");
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
             }
         });
     }
@@ -241,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         responseBtn = (TextView) findViewById(R.id.retrofit2_btn);
+        get_local_data = (TextView) findViewById(R.id.get_local_data);
         rxjavaBtn = (TextView) findViewById(R.id.rxjava2_btn);
         constraintLayout_text = (TextView) findViewById(R.id.constraintLayout_text);
     }
