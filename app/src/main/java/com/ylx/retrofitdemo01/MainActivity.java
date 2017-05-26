@@ -2,15 +2,18 @@ package com.ylx.retrofitdemo01;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ylx.retrofitdemo01.base.BaseActivity;
+import com.ylx.retrofitdemo01.base.BaseObserver;
 import com.ylx.retrofitdemo01.bean.Person;
 import com.ylx.retrofitdemo01.bean.Repo;
+import com.ylx.retrofitdemo01.bean.User;
 import com.ylx.retrofitdemo01.retrofit.LocalRetrofit;
+import com.ylx.retrofitdemo01.retrofit.RetroFactory;
 import com.ylx.retrofitdemo01.retrofit.RetrofitTest;
 import com.ylx.retrofitdemo01.util.BaseTask;
 
@@ -31,7 +34,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final String TAG = "=====MainActivity=====";
 
@@ -85,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                getTest();
-                getUser();
+//                getUser();
+                getUsers();
             }
         });
 
@@ -118,6 +122,28 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private Observable observable;
+    private BaseObserver baseObserver;
+
+    /**
+     * 仿真版请求本地服务器数据，rxJava2 + retrofit2
+     */
+    private void getUsers(){
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("name", "张三丰");
+        map.put("age", "123");
+
+        observable = RetroFactory.getInstance().getUser(map);
+        baseObserver = new BaseObserver<User>(MainActivity.this, pd) {
+
+            @Override
+            public void onHandleSuccess(User user) {
+                get_local_data.setText("name = " + user.getName() + ",age = " + user.getAge());
+            }
+        };
+        observable.compose(composeFunction).subscribe(baseObserver);
     }
 
     /**
@@ -330,5 +356,21 @@ public class MainActivity extends AppCompatActivity {
         get_local_data = (TextView) findViewById(R.id.get_local_data);
         rxjavaBtn = (TextView) findViewById(R.id.rxjava2_btn);
         constraintLayout_text = (TextView) findViewById(R.id.constraintLayout_text);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(baseObserver != null){
+            baseObserver.closeResponse();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        if(baseObserver != null){
+//            baseObserver.closeResponse();
+//        }
     }
 }

@@ -2,10 +2,12 @@ package com.ylx.retrofitdemo01.apiservice;
 
 import com.ylx.retrofitdemo01.bean.BaseEntity;
 import com.ylx.retrofitdemo01.bean.Person;
+import com.ylx.retrofitdemo01.bean.User;
 
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
@@ -52,4 +54,9 @@ public interface LocalApi {
     @Headers("Content-Type:application/x-www-form-urlencoded; charset=utf-8")
     @POST("ServletTest")
     Call<BaseEntity<List<Person>>> getUsers(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @Headers("Content-Type:application/x-www-form-urlencoded; charset=utf-8")
+    @POST("ServletTest")
+    Observable<BaseEntity<User>> getUser(@FieldMap Map<String, String> map);
 }
